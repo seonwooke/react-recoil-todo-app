@@ -1,25 +1,34 @@
-import logo from './logo.svg';
+import React from 'react';
+import { useRecoilValue } from 'recoil';
 import './App.css';
+import TodoItem from './components/TodoItem';
+import TodoItemCreator from './components/TodoItemCreator';
+import TodoListFilters from './components/TodoListFilters';
+import TodoListStats from './components/TodoListStats';
+import { filteredTodoListState } from './todoAtoms';
+import { currentUserNameQuery } from './userAtoms';
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    const filteredTodoList = useRecoilValue(filteredTodoListState); /// Filter[4]
+
+    return (
+        <div className="App">
+            <React.Suspense fallback={<div>...loading</div>}>
+                <CurrentUserInfo />
+            </React.Suspense>
+            <TodoListStats />
+            <TodoListFilters />
+            <TodoItemCreator />
+            {filteredTodoList.map((todoItem) => (
+                <TodoItem key={todoItem.id} item={todoItem} />
+            ))}
+        </div>
+    );
 }
 
 export default App;
+
+function  CurrentUserInfo() {
+    const userName = useRecoilValue(currentUserNameQuery);
+    return <div>{userName}</div>;
+}
